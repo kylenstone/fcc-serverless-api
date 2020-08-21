@@ -13,7 +13,7 @@ Click the button to deploy this app to live infrastructure on Begin.
 
 Once your app is deployed, clone the repo Begin creates and `npm install`.
 ```bash
-git clone https://github.com/username/begin-app-project-name.git
+git clone https://github.com/<username>/begin-app-project-name.git
 cd begin-app-project-name
 npm install
 npm start
@@ -22,14 +22,14 @@ npm start
 Serverless is another tool for web developers to develop applications and deploy them to scalable infrastructure. I got started using FreeCodeCamp and I am forever grateful. I wanted to encourage new developers to take a look at developing with cloud functions instead of long lived stateful server processes. This means building APIs and back-end systems with a new mindset. In this project, the FCC API is replicated using serverless technologies and deployed with Begin CI/CD. Requirements include Node.js and a Github Account. No AWS Account needed because we will deploy with Begin CI/CD and they handle account provisioning.
 
 ## Clone repo and local development
-The first step to this is launching a new project and cloning the repo that Begin provisions for you from GitHub.
+Launch a new project by cloning the repo that Begin provisions to you from GitHub.
 ```bash
-git clone https://github.com/username/begin-app-project-name.git
+git clone https://github.com/<username>/begin-app-project-name.git
 cd begin-app-project-name
 npm install
 ```
 ## Project structure
-Your source code is primarily in `/src`. Each `HTTP` function represents a discrete endpoint with self-contained logic. For example `get-index` contains the code for what the response is for a GET request to the root of your application. Static assets and items that would normally be behind a CDN are in `/public`. The `app.arc` file is a manifest that describes your source code and the resulting AWS infrastructure. `/src` and `/public` are the only folders that will be deployed, the rest are ignored by remain in your GitHub repo.
+Your source code is primarily in `/src`. Each `HTTP` function represents a discrete endpoint with self-contained logic. For example `get-index` contains the code issued in response to a GET request at the root of your application. Static assets and items that would normally be behind a CDN are in `/public`. The `app.arc` file is a manifest that describes your source code and the resulting AWS infrastructure. `/src` and `/public` are the only folders that will be deployed, the rest are ignored but remain in your GitHub repo.
 ```bash
 fcc-serverless-api
 ├── public
@@ -43,7 +43,7 @@ fcc-serverless-api
 ```
 
 ## Function logs and the Node console
-`console.log('got here')` is probably my most used debugging tool. It's a simple way to walk through your code execution and inspect different logic paths. To view logs in Begin, go to your Begin console and inspect the route you want. Each function is isolated and has it's own execution environment. In our case, it's a Node environment. When your function is invoked with an HTTP method, AWS will bring up your function code, execute it, and wipe out it's memory. Each time that function is called, it behaves as if it is being run for the first time. This is different from a regular Express server that is long living and can retain data between route invocations. We'll talk about how to persist information in a separate repo. If you are eager to skip ahead to sessions and data persistence, check out [https://learn.begin.com](https://learn.begin.com)
+`console.log('got here')` is probably my most used debugging tool. It's a simple way to walk through your code execution and inspect different logic paths. To view logs in Begin, go to your Begin console and inspect the route you want. Each function is isolated and has it's own execution environment. In our case, it's a Node environment. When your function is invoked with an HTTP method, AWS will invoke your function code, execute it, then remove the environment in which it ran. Each time that function is called, it behaves as if running for the first time. This is different from a regular Express server that is long living and can retain data between route invocations. We'll talk about how to persist information in a separate repo. If you are eager to skip ahead to sessions and data persistence, check out [https://learn.begin.com](https://learn.begin.com)
 
 Let's add a `console.log()` statement to the `get-index` function.
 
@@ -105,7 +105,7 @@ fcc-apis   # app namespace - this helps organize the backend resources
 get /      # the function handler is found in /src/http/get-index/index.js
 ```
 
-Each function is self contained in it's own function folder according to route and HTTP method. One failing function won't take down the entire app, just the code behind that route.
+Each function is self-contained in its own folder according to route and HTTP method. One failing function won't cause the entire app to fail, just the code behind that route.
 
 To start serving HTML and static assets, we can put them into the `/public` folder. Notice that the image served from `/public` is referenced with `_static`. Take a look at line 13, `<img src="_static/me_begin.jpg">`.
 
@@ -121,7 +121,7 @@ get /json
 ```js
 // src/http/get-json/index.js
 exports.handler = async function http (req) {
-  let message = "Praise Cage!"
+  let message = "Hello json"
   return {
     headers: {
       "content-type": "application/json; charset=utf-8"
@@ -160,7 +160,7 @@ exports.handler = async function http (req) {
   }
 }
 ```
-Add the environment variable in the Begin Console by navigating to "Environments", typing in your key and value, and clicking `add`. Note that there are different areas for `staging` and `production`.
+Add the environment variable in the Begin Console by navigating to "Environments", typing in your key and value, and clicking `add`. Note that there are different sets of variables for `staging` and `production`.
 
 ![Environment Variable Screenshot](screenshots/env_var_screenshot.png)
 
@@ -221,7 +221,7 @@ To learn more about the `arc.http` request and response methods, check out https
 
 ## Get route(path) parameter input from the client
 
-In this function, we will build an echo endpoint to respond with a JSON object of the word that is passed in as a request parameter. Add a new endpoint to `app.arc` and write a corresponding handler function.
+In this function, we will build an echo endpoint to return a JSON representation of the string passed in as a request parameter. Add a new endpoint to `app.arc` and write a corresponding handler function.
 
 ```md
 # app.arc
